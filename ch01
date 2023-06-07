@@ -1,0 +1,29 @@
+kubectl create namespace ckad
+kubectl run nginx --image=nginx:1.17.10 --port=80 -n ckad
+
+kubectl describe pod nginx -n ckad
+
+kubectl run busybox --image=busybox -it --rm --restart=Never -n ckad -- wget <ip-of-nginx-pod> -O-
+
+kubectl logs nginx -n ckad
+
+kubectl exec -it nginx -n ckad -- /bin/bash
+export DB_USERNAME=admin
+export DB_URL=postgresql://mydb:5432
+exit
+
+kubectl exec -it nginx -n ckad -- /bin/bash
+ls -l
+exit
+
+kubectl run loop --image=busybox --restart=Never -o yaml --dry-run -- /bin/sh -c "for i in {1..10}; do echo 'Welcome $i times'; done;" > loop.yaml
+kubectl create -f loop.yaml -n ckad
+#Pod is in status Completed
+
+kubectl delete pod loop -n ckad
+#Edit yaml
+kubectl create -f loop.yaml -n ckad
+
+kubectl describe pod loop -n ckad
+
+kubectl delete namespace ckad
